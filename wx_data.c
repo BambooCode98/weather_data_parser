@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
     printf("Failed to open file!\n");
   }
 
+
   char* file_name;
   char* file_loc;
 
@@ -22,12 +23,13 @@ int main(int argc, char* argv[]) {
 
   FILE* solar = fopen(file_name, "a");
   if(!solar) {
-    printf("Failed to open solar dta file for appending!\n");
+    printf("Failed to open solar data file for appending!\n");
     exit(EXIT_FAILURE);
   }
 
+  
   fseek(wx_data, 0, SEEK_END);
-  long file_size = ftell(wx_data);
+  unsigned long file_size = ftell(wx_data);
 
   char ch[100];
   fseek(wx_data, 0, SEEK_SET);
@@ -35,9 +37,14 @@ int main(int argc, char* argv[]) {
   char test = 0;
   int matches = 0;
   char check_chars[20];
-  char storage[file_size];
+  char* storage;
+  storage = (char*)malloc(sizeof(char)*file_size);
   // char solar_rad_data[file_size];
   // char time_data[file_size];
+  if(storage == NULL) {
+    printf("Failed to allocate memory!");
+    exit(EXIT_FAILURE);
+  }
 
   fread(storage, sizeof(char), file_size, wx_data);
   fputs("Date,", solar);
@@ -47,17 +54,20 @@ int main(int argc, char* argv[]) {
   // fputs("Dew Point,", solar);
   fputs("\n\n", solar);
 
-  for(long i = 0; i < file_size; i++) {
+  // printf("Got here!\n");
+
+  for(unsigned long i = 0; i < file_size; i++) {
     if(storage[i] == 'd' && storage[i+1] == 'a' && storage[i+2] == 't' && storage[i+3] == 'e') {
       int inc = 0;
       while(storage[i+8+inc] != '&') {
         fputc(storage[i+8+inc], solar);
-        // printf("%c", storage[i+inc]);
+        printf("%c", storage[i+inc]);
         inc++;
       }
       fputc(',', solar);
       // printf("\n");
     }
+    // printf("%c", storage[9]);
 
     if(storage[i] == 't' && storage[i+1] == 'e' && storage[i+2] == 'm' && storage[i+3] == 'p' && storage[i+4] == 'f') {
       int inc = 0;
@@ -87,7 +97,7 @@ int main(int argc, char* argv[]) {
       int inc = 0;
       while(storage[i+15+inc] != '&') {
         fputc(storage[i+15+inc], solar);
-        // printf("%c", storage[i+inc]);
+        printf("%c", storage[i+inc]);
         inc++;
       }
       // fputc('\n', solar);
@@ -95,11 +105,12 @@ int main(int argc, char* argv[]) {
       // printf("\n\n");
 
     }
-
+    printf("%c", storage[i]);
     // fputc('\n', solar);
     // printf("\n\n");
   }
 
+  free(storage);
   fclose(solar);
   fclose(wx_data);
 
