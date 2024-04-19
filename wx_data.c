@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
   // fputs("Dew Point,", solar);
   fputs("\n\n", solar);
 
-  for(int i = 0; i < file_size; i++) {
+  for(long i = 0; i < file_size; i++) {
     if(storage[i] == 'd' && storage[i+1] == 'a' && storage[i+2] == 't' && storage[i+3] == 'e') {
       int inc = 0;
       while(storage[i+8+inc] != '&') {
